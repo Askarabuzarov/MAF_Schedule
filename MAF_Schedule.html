@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Расписание на сегодня — Mayakofsky Fitness</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #070707;
+      --grid: #d65835;
+      --orange: #f26a21;
+      --text: #ffffff;
+      --muted: #d9d9d9;
+      --dim: #8c8c8c;
+      --slot: 96px;
+      --time-col: 95px;
+      --head-h: 168px;
+      --board-head-h: 58px;
+      --footer-h: 34px;
+      --font: 'Mulish', Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .screen {
+      width: 100vw;
+      height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 96, 20, 0.12), transparent 35%),
+        linear-gradient(180deg, #080808 0%, #000 100%);
+      display: grid;
+      grid-template-rows: var(--head-h) 1fr var(--footer-h);
+    }
+
+    header {
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-bottom: 2px solid var(--grid);
+      background: #050505;
+      padding-top: 16px;
+    }
+
+    .logo {
+      width: min(430px, 55vw);
+      max-height: 78px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(242, 106, 33, 0.15));
+    }
+
+    h1 {
+      margin: 8px 0 0;
+      color: var(--orange);
+      font-size: clamp(26px, 3.9vw, 56px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .date-line {
+      position: absolute;
+      right: 18px;
+      bottom: 10px;
+      font-size: clamp(14px, 1.3vw, 24px);
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: var(--time-col) 1fr 1fr 1fr;
+      min-height: 0;
+      border-top: 0;
+      border-left: 2px solid var(--grid);
+      border-right: 2px solid var(--grid);
+    }
+
+    .corner,
+    .col-head {
+      height: var(--board-head-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #171717;
+      background: var(--orange);
+      border-right: 2px solid #121212;
+      border-bottom: 2px solid var(--grid);
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: clamp(13px, 1.28vw, 26px);
+      line-height: 1.05;
+      letter-spacing: .02em;
+      padding: 6px 8px;
+    }
+
+    .corner {
+      font-size: clamp(13px, 1.1vw, 22px);
+    }
+
+    .col-head:last-child {
+      border-right: 0;
+    }
+
+    .time-col,
+    .lane {
+      position: relative;
+      height: calc(100vh - var(--head-h) - var(--footer-h) - var(--board-head-h));
+      min-height: 0;
+    }
+
+    .time-col {
+      background: var(--orange);
+      color: #111;
+      border-right: 2px solid var(--grid);
+      font-weight: 900;
+    }
+
+    .time-marker {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: var(--slot);
+      border-bottom: 2px solid rgba(0, 0, 0, .45);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 8px;
+      font-size: clamp(15px, 1.35vw, 28px);
+    }
+
+    .lane {
+      background-color: var(--panel);
+      background-image:
+        linear-gradient(to bottom, rgba(214, 88, 53, .95) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, 0));
+      background-size: 100% var(--slot), 20px 100%;
+      border-right: 2px solid var(--grid);
+      overflow: hidden;
+    }
+
+    .lane:last-child {
+      border-right: 0;
+    }
+
+    .event {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      min-height: 38px;
+      padding: 8px 9px 6px;
+      border-left: 4px solid var(--orange);
+      background: linear-gradient(90deg, rgba(242, 106, 33, .13), rgba(0, 0, 0, .15));
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .event.next {
+      outline: 2px solid rgba(242, 106, 33, .75);
+      box-shadow: 0 0 18px rgba(242, 106, 33, .22);
+    }
+
+    .event.upcoming .event-title,
+    .event.upcoming .event-trainer,
+    .event.upcoming .event-room,
+    .event.upcoming .event-time {
+      color: var(--orange);
+    }
+
+    .event.multi {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 5px 6px;
+      border-left-width: 4px;
+    }
+
+    .event.multi .multi-row {
+      min-height: 0;
+      flex: 1 1 0;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(242, 106, 33, .32);
+      padding-bottom: 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .event.multi .multi-row:last-child {
+      border-bottom: 0;
+    }
+
+    .event.multi .event-title {
+      font-size: clamp(13px, 1.2vw, 23px);
+      line-height: 1;
+    }
+
+    .event.multi .event-trainer,
+    .event.multi .event-room,
+    .event.multi .event-time {
+      font-size: clamp(9px, .86vw, 16px);
+      line-height: 1;
+    }
+
+    .event-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
+      overflow: hidden;
+      font-size: clamp(19px, 1.75vw, 38px);
+    }
+
+    .event-header .event-title {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .event-header .event-time {
+      font-size: 0.55em;
+    }
+
+    .event.multi .event-header {
+      font-size: clamp(13px, 1.2vw, 23px);
+    }
+
+    .event-title {
+      font-size: clamp(19px, 1.75vw, 38px);
+      font-weight: 900;
+      line-height: 1.02;
+      color: #fff;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .event-trainer,
+    .event-room {
+      font-size: clamp(14px, 1.25vw, 27px);
+      line-height: 1.05;
+      color: #fff;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .event-room {
+      color: var(--muted);
+      font-style: italic;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .event-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .event-meta .event-trainer {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .event-time {
+      font-weight: 900;
+      color: #fff;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .empty {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--dim);
+      font-size: clamp(18px, 2vw, 34px);
+      padding: 30px;
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid var(--grid);
+      padding: 0 18px;
+      font-size: clamp(12px, 1vw, 20px);
+      color: var(--muted);
+      background: #050505;
+    }
+
+    .status.error {
+      color: #ff9b78;
+    }
+
+    @media (orientation: portrait) {
+      :root {
+        --head-h: 150px;
+        --time-col: 82px;
+        --board-head-h: 54px;
+        --footer-h: 30px;
+      }
+
+      .logo {
+        width: min(280px, 72vw);
+        max-height: 50px;
+      }
+
+      header {
+        padding-top: 10px;
+      }
+
+      h1 {
+        font-size: clamp(28px, 4.6vw, 48px);
+        margin-top: 8px;
+      }
+
+      .date-line {
+        display: none;
+      }
+
+      .corner,
+      .col-head {
+        height: var(--board-head-h);
+        font-size: clamp(12px, 1.7vw, 22px);
+        padding: 4px 5px;
+      }
+
+      .time-col,
+      .lane {
+        height: calc(100vh - var(--head-h) - var(--footer-h) - var(--board-head-h));
+      }
+
+      .time-marker {
+        justify-content: center;
+        padding-top: 8px;
+        font-size: clamp(20px, 2.4vw, 34px);
+      }
+
+      .event {
+        left: 4px;
+        right: 4px;
+        padding: 5px 5px 4px;
+        border-left-width: 3px;
+      }
+
+      .event-title {
+        font-size: clamp(15px, 2.0vw, 30px);
+        white-space: normal;
+        overflow: hidden;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      .event-trainer,
+      .event-room {
+        font-size: clamp(12px, 1.5vw, 22px);
+      }
+
+      .event-header {
+        font-size: clamp(15px, 2.0vw, 30px);
+      }
+
+      footer {
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="screen">
+    <header>
+      <img class="logo" src="MAF_Logo_White.svg" alt="Mayakofsky Fitness" />
+      <h1>Расписание на сегодня</h1>
+      <div class="date-line" id="dateLine"></div>
+    </header>
+
+    <section class="board" aria-label="Расписание занятий">
+      <div class="corner">Время</div>
+      <div class="col-head">Групповые<br>программы</div>
+      <div class="col-head">Бассейн</div>
+      <div class="col-head">Студия Йоги и Пилатес</div>
+
+      <div class="time-col" id="timeCol"></div>
+      <div class="lane" id="lane-group"></div>
+      <div class="lane" id="lane-pool"></div>
+      <div class="lane" id="lane-studio"></div>
+    </section>
+
+    <footer>
+      <span id="clock"></span>
+      <span class="status" id="status">Загрузка расписания…</span>
+    </footer>
+  </main>
+
+  <script>
+    const CONFIG = {
+      apiBase: 'https://api.fitpass.ru/api',
+      club: '487',
+      refreshMinutes: 5,
+      timeZone: 'Asia/Yekaterinburg',
+      excludedCategoryIDs: ['2081'],
+      useDemoIfApiFails: true,
+      startHour: 9,
+      endHour: 21,
+      lanes: {
+        group: ['групп', 'зал', 'аэроб', 'кардио', 'танц', 'тренаж'],
+        pool: ['бассейн', 'pool', 'аква', 'плав'],
+        studio: ['студ', 'пилат', 'йога', 'антиграв', 'реформер']
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const pad = (n) => String(n).padStart(2, '0');
+    let latestLessons = [];
+
+    const todayISO = () => {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: CONFIG.timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(new Date());
+      const get = (type) => parts.find(p => p.type === type).value;
+      return `${get('year')}-${get('month')}-${get('day')}`;
+    };
+
+    function nowInClubTime() {
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: CONFIG.timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hourCycle: 'h23'
+      }).formatToParts(new Date());
+      const get = (type) => parts.find(p => p.type === type).value;
+      return {
+        year: Number(get('year')),
+        month: Number(get('month')),
+        day: Number(get('day')),
+        hour: Number(get('hour')),
+        minute: Number(get('minute')),
+        second: Number(get('second'))
+      };
+    }
+
+    function setDateAndClock() {
+      const now = new Date();
+      $('dateLine').textContent = now.toLocaleDateString('ru-RU', { timeZone: CONFIG.timeZone, weekday: 'long', day: 'numeric', month: 'long' });
+      const clubNow = nowInClubTime();
+      $('clock').textContent = `${pad(clubNow.hour)}:${pad(clubNow.minute)}`;
+    }
+
+    function updateLayoutMetrics() {
+      const lane = $('lane-group');
+      if (!lane) return;
+      const rows = Math.max(1, CONFIG.endHour - CONFIG.startHour + 1);
+      const laneHeight = lane.clientHeight || 0;
+      if (!laneHeight) return;
+      document.documentElement.style.setProperty('--slot', `${laneHeight / rows}px`);
+    }
+
+    function buildTimeColumn() {
+      const col = $('timeCol');
+      col.innerHTML = '';
+      for (let h = CONFIG.startHour; h <= CONFIG.endHour; h++) {
+        const div = document.createElement('div');
+        div.className = 'time-marker';
+        div.style.top = `${(h - CONFIG.startHour) * slotPx()}px`;
+        div.textContent = `${h}:00`;
+        col.appendChild(div);
+      }
+    }
+
+    function slotPx() {
+      return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slot')) || 96;
+    }
+
+    async function getJSON(path, params = {}) {
+      const url = new URL(CONFIG.apiBase.replace(/\/$/, '') + '/' + path.replace(/^\//, ''));
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
+      });
+      const res = await fetch(url.toString(), { cache: 'no-store' });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      const payload = await res.json();
+      if (payload && payload.Error) {
+        throw new Error(payload.Error.ClientMessage || payload.Error.ErrorCode || 'FITPASS API error');
+      }
+      // FITPASS wraps successful responses as { ActualDateTime, Data }.
+      // Method docs show only the contents of Data, so unwrap it here.
+      return payload && Object.prototype.hasOwnProperty.call(payload, 'Data') ? payload.Data : payload;
+    }
+
+    async function loadData() {
+      const date = todayISO();
+      const [timetable, rooms, masters, lessonTypes] = await Promise.all([
+        getJSON('lesson/timetable', { club: CONFIG.club, dateBegin: date, dateEnd: date }),
+        getJSON('lesson/rooms', { club: CONFIG.club }),
+        getJSON('lesson/masters', { club: CONFIG.club }),
+        getJSON('lesson/lessons', { club: CONFIG.club })
+      ]);
+
+      const roomsById = buildLookup(rooms);
+      const mastersById = buildLookup(masters);
+      const lessonTypesById = buildLookup(lessonTypes);
+      return normalizeLessons(timetable, roomsById, mastersById, lessonTypesById);
+    }
+
+    function buildLookup(arr) {
+      const lookup = {};
+      (Array.isArray(arr) ? arr : []).forEach(x => {
+        // FITPASS usually uses ID, but keep this tolerant because some endpoints use entity-specific IDs.
+        [x.ID, x.Id, x.id, x.LessonTypeID, x.TypeID].forEach(key => {
+          if (key !== undefined && key !== null && key !== '') lookup[String(key)] = x;
+        });
+      });
+      return lookup;
+    }
+
+    function resolveLessonType(item, typesById) {
+      const keys = [
+        item.LessonTypeID,
+        item.LessonTypeId,
+        item.LessonID,
+        item.LessonId,
+        item.TypeID,
+        item.TypeId
+      ];
+      for (const key of keys) {
+        if (key !== undefined && key !== null && typesById[String(key)]) return typesById[String(key)];
+      }
+      return {};
+    }
+
+    function normalizeLessons(timetable, roomsById, mastersById, typesById) {
+      const visible = [];
+      const excludedForDebug = [];
+
+      (Array.isArray(timetable) ? timetable : []).forEach(item => {
+        const room = roomsById[String(item.RoomID)] || roomsById[String(item.RoomId)] || {};
+        const master = mastersById[String(item.MasterID)] || mastersById[String(item.MasterId)] || {};
+        const type = resolveLessonType(item, typesById);
+
+        // Children's classes are excluded using method 5.5 lesson type data.
+        // In method 5.5, CategoryID belongs to the lesson type; the timetable entry is only joined to it by LessonTypeID.
+        if (isExcludedCategoryFromLessonType(type, item)) {
+          excludedForDebug.push({
+            timetableID: item.ID,
+            lessonTypeID: item.LessonTypeID || item.LessonTypeId || item.TypeID,
+            title: item.LessonTypeName || item.Name || type.Name,
+            categoryID: extractCategoryIDs(type, item).join(', '),
+            categoryName: extractCategoryNames(type, item).join(', ')
+          });
+          return;
+        }
+
+        const title = item.LessonTypeName || item.Name || type.Name || 'Занятие';
+        const trainer = item.MasterName || master.Name || [master.LastName, master.FirstName, master.Patronymic].filter(Boolean).join(' ') || '';
+        const roomName = item.RoomName || room.Name || '';
+        visible.push({
+          id: item.ID,
+          title,
+          trainer,
+          room: roomName,
+          date: item.Date,
+          begin: item.BeginTime,
+          end: item.EndTime || addMinutes(item.BeginTime, item.DurationMinutes || 60),
+          lane: classifyLane(title, roomName, extractCategoryNames(type, item).join(' '))
+        });
+      });
+
+      window.FITPASS_EXCLUDED_CHILDREN = excludedForDebug;
+      if (excludedForDebug.length) console.table(excludedForDebug);
+      return visible.sort((a, b) => a.begin.localeCompare(b.begin));
+    }
+
+    function extractCategoryIDs(type = {}, item = {}) {
+      const categoryObjects = [
+        type.Category,
+        type.ClubServiceCategory,
+        type.ServiceCategory,
+        item.Category,
+        item.ClubServiceCategory,
+        item.ServiceCategory
+      ].filter(Boolean);
+
+      const directIDs = [
+        // Primary source: method 5.5 lesson/lessons
+        type.CategoryID,
+        type.CategoryId,
+        type.ClubServiceCategoryID,
+        type.ClubServiceCategoryId,
+        type.ServiceCategoryID,
+        type.ServiceCategoryId,
+        type.LessonCategoryID,
+        type.LessonCategoryId,
+        // Fallback only: some installations also duplicate category on timetable rows
+        item.CategoryID,
+        item.CategoryId,
+        item.ClubServiceCategoryID,
+        item.ClubServiceCategoryId,
+        item.ServiceCategoryID,
+        item.ServiceCategoryId,
+        item.LessonCategoryID,
+        item.LessonCategoryId,
+        ...categoryObjects.flatMap(obj => [obj.ID, obj.Id, obj.id, obj.CategoryID, obj.CategoryId])
+      ];
+
+      return directIDs
+        .filter(id => id !== undefined && id !== null && id !== '')
+        .map(id => String(id));
+    }
+
+    function extractCategoryNames(type = {}, item = {}) {
+      const categoryObjects = [type.Category, type.ClubServiceCategory, type.ServiceCategory, item.Category, item.ClubServiceCategory, item.ServiceCategory].filter(Boolean);
+      return [
+        type.CategoryName,
+        type.ClubServiceCategoryName,
+        type.ServiceCategoryName,
+        item.CategoryName,
+        item.ClubServiceCategoryName,
+        item.ServiceCategoryName,
+        ...categoryObjects.flatMap(obj => [obj.Name, obj.name])
+      ].filter(Boolean).map(String);
+    }
+
+    function isExcludedCategoryFromLessonType(type, item) {
+      const excluded = new Set(CONFIG.excludedCategoryIDs.map(String));
+      return extractCategoryIDs(type, item).some(id => excluded.has(id));
+    }
+
+    function addMinutes(hhmm, minutes) {
+      const [h, m] = (hhmm || '00:00').split(':').map(Number);
+      const d = new Date();
+      d.setHours(h, m + minutes, 0, 0);
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function classifyLane(title, roomName, categoryName) {
+      const text = `${title} ${roomName} ${categoryName || ''}`.toLowerCase();
+      for (const [lane, keys] of Object.entries(CONFIG.lanes)) {
+        if (keys.some(k => text.includes(k))) return lane;
+      }
+      return 'group';
+    }
+
+    function minutesFromStart(hhmm) {
+      const [h, m] = (hhmm || '00:00').split(':').map(Number);
+      return (h - CONFIG.startHour) * 60 + m;
+    }
+
+    function render(lessons) {
+      ['group', 'pool', 'studio'].forEach(lane => {
+        const el = $(`lane-${lane}`);
+        el.innerHTML = '';
+        const laneGroups = computeOverlapGroups(lessons.filter(x => x.lane === lane));
+        if (!laneGroups.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = 'Нет занятий';
+          el.appendChild(empty);
+          return;
+        }
+        laneGroups.forEach(group => el.appendChild(group.length > 1 ? multiEventNode(group) : eventNode(group[0])));
+      });
+    }
+
+    function computeOverlapGroups(lessons) {
+      const sorted = [...lessons]
+        .map(lesson => ({ ...lesson, _start: minutesFromStart(lesson.begin), _end: minutesFromStart(lesson.end) }))
+        .sort((a, b) => {
+          const startDiff = a._start - b._start;
+          if (startDiff !== 0) return startDiff;
+          return a._end - b._end;
+        });
+
+      const groups = [];
+      let current = [];
+      let currentEnd = -1;
+
+      const flush = () => {
+        if (!current.length) return;
+        groups.push(current.sort((a, b) => a._start - b._start || a.title.localeCompare(b.title, 'ru')));
+        current = [];
+        currentEnd = -1;
+      };
+
+      for (const lesson of sorted) {
+        if (!current.length || lesson._start < currentEnd) {
+          current.push(lesson);
+          currentEnd = Math.max(currentEnd, lesson._end);
+        } else {
+          flush();
+          current.push(lesson);
+          currentEnd = lesson._end;
+        }
+      }
+      flush();
+      return groups;
+    }
+
+    function eventNode(lesson) {
+      const node = document.createElement('article');
+      node.className = 'event';
+      const top = lesson._start / 60 * slotPx();
+      const duration = Math.max(30, lesson._end - lesson._start);
+      node.style.top = `${top}px`;
+      node.style.height = `${Math.max(44, duration / 60 * slotPx() - 4)}px`;
+      node.style.left = '8px';
+      node.style.right = '8px';
+      node.style.width = 'auto';
+      if (isNextOrCurrent(lesson)) node.classList.add('next');
+      if (isUpcomingSoon(lesson)) node.classList.add('upcoming');
+      node.innerHTML = `
+        <div class="event-header">
+          <div class="event-title">${escapeHTML(lesson.title)}</div>
+          <div class="event-time">${escapeHTML(lesson.begin)}</div>
+        </div>
+        <div class="event-meta">
+          <div class="event-trainer">${escapeHTML(lesson.trainer)}</div>
+          <div class="event-room">${escapeHTML(lesson.room)}</div>
+        </div>
+      `;
+      return node;
+    }
+
+    function multiEventNode(group) {
+      const node = document.createElement('article');
+      node.className = 'event multi';
+      const start = Math.min(...group.map(x => x._start));
+      const end = Math.max(...group.map(x => x._end));
+      node.style.top = `${start / 60 * slotPx()}px`;
+      node.style.height = `${Math.max(52, (end - start) / 60 * slotPx() - 4)}px`;
+      node.style.left = '8px';
+      node.style.right = '8px';
+      node.style.width = 'auto';
+      if (group.some(isNextOrCurrent)) node.classList.add('next');
+      if (group.some(isUpcomingSoon)) node.classList.add('upcoming');
+
+      node.innerHTML = group.map(lesson => `
+        <div class="multi-row">
+          <div class="event-header">
+            <div class="event-title">${escapeHTML(lesson.title)}</div>
+            <div class="event-time">${escapeHTML(lesson.begin)}</div>
+          </div>
+          <div class="event-meta">
+            <div class="event-trainer">${escapeHTML(lesson.trainer)}</div>
+            <div class="event-room">${escapeHTML(lesson.room)}</div>
+          </div>
+        </div>
+      `).join('');
+      return node;
+    }
+
+    function isNextOrCurrent(lesson) {
+      const clubNow = nowInClubTime();
+      const n = clubNow.hour * 60 + clubNow.minute;
+      const [bh, bm] = lesson.begin.split(':').map(Number);
+      const [eh, em] = lesson.end.split(':').map(Number);
+      const b = bh * 60 + bm;
+      const e = eh * 60 + em;
+      return n >= b - 15 && n <= e;
+    }
+
+    function isUpcomingSoon(lesson) {
+      const clubNow = nowInClubTime();
+      const n = clubNow.hour * 60 + clubNow.minute;
+      const [bh, bm] = lesson.begin.split(':').map(Number);
+      const b = bh * 60 + bm;
+      return n >= b - 15 && n <= b + 5;
+    }
+
+    function escapeHTML(str = '') {
+      return String(str).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\'': '&#39;', '"': '&quot;' }[ch]));
+    }
+
+    const DEMO = [
+      { title: 'Стретчинг', trainer: 'Алёна Осина', room: 'Аэробика', begin: '08:00', end: '08:55', lane: 'group' },
+      { title: 'Аква-Интервал', trainer: 'Алина Драгун', room: 'Бассейн', begin: '08:30', end: '09:25', lane: 'pool' },
+      { title: 'Пилатес Реформер', trainer: 'Ольга Лана', room: 'студия пилатес', begin: '08:30', end: '09:25', lane: 'studio' },
+      { title: 'Восточный танец', trainer: 'Инна Лисан', room: 'Танцевальный зал', begin: '09:30', end: '10:25', lane: 'group' },
+      { title: 'Антигравити', trainer: 'Кунцев Роман', room: 'студия пилатес', begin: '09:30', end: '10:25', lane: 'studio' },
+      { title: 'Здоровая спина', trainer: 'Анна Лисан', room: 'Групповые программы', begin: '11:00', end: '11:55', lane: 'group' },
+      { title: 'Танцы', trainer: 'Настя Марина', room: 'Групповые программы', begin: '17:00', end: '17:55', lane: 'group' },
+      { title: 'TRX тренировка с петлями', trainer: 'Иван Драгун', room: 'большой клуб', begin: '18:00', end: '18:55', lane: 'group' },
+      { title: 'Аква-Нудл', trainer: 'Ирина Спина', room: 'Бассейн', begin: '19:00', end: '19:55', lane: 'pool' },
+      { title: 'МФР', trainer: 'Ольга Игорь', room: 'студия пилатес', begin: '19:30', end: '20:25', lane: 'studio' }
+    ];
+
+    async function refresh() {
+      setDateAndClock();
+      updateLayoutMetrics();
+      buildTimeColumn();
+      try {
+        latestLessons = await loadData();
+        render(latestLessons);
+        $('status').className = 'status';
+        const clubNow = nowInClubTime();
+        $('status').textContent = `Обновлено: ${pad(clubNow.hour)}:${pad(clubNow.minute)}`;
+      } catch (err) {
+        if (CONFIG.useDemoIfApiFails) {
+          latestLessons = DEMO;
+          render(latestLessons);
+        }
+        $('status').className = 'status error';
+        $('status').textContent = `API недоступен: показан демо-режим`;
+        console.error(err);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      setDateAndClock();
+      updateLayoutMetrics();
+      buildTimeColumn();
+      render(latestLessons.length ? latestLessons : DEMO);
+    });
+    setInterval(() => {
+      setDateAndClock();
+      render(latestLessons.length ? latestLessons : DEMO);
+    }, 1000 * 15);
+    setInterval(refresh, CONFIG.refreshMinutes * 60 * 1000);
+    refresh();
+  </script>
+</body>
+
+</html>
