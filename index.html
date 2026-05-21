@@ -76,7 +76,7 @@
     h1 {
       margin: 8px 0 0;
       color: var(--orange);
-      font-size: clamp(26px, 3.9vw, 56px);
+      font-size: clamp(31px, 4.7vw, 67px);
       line-height: 1;
       font-weight: 900;
       letter-spacing: 0.045em;
@@ -88,7 +88,7 @@
       position: absolute;
       right: 18px;
       bottom: 10px;
-      font-size: clamp(14px, 1.3vw, 24px);
+      font-size: clamp(17px, 1.56vw, 29px);
       color: var(--muted);
       letter-spacing: .04em;
     }
@@ -115,14 +115,14 @@
       border-bottom: 2px solid var(--grid);
       font-weight: 900;
       text-transform: uppercase;
-      font-size: clamp(13px, 1.28vw, 26px);
+      font-size: clamp(16px, 1.54vw, 31px);
       line-height: 1.05;
       letter-spacing: .02em;
       padding: 6px 8px;
     }
 
     .corner {
-      font-size: clamp(13px, 1.1vw, 22px);
+      font-size: clamp(16px, 1.32vw, 26px);
     }
 
     .col-head:last-child {
@@ -153,7 +153,7 @@
       align-items: flex-start;
       justify-content: center;
       padding-top: 8px;
-      font-size: clamp(15px, 1.35vw, 28px);
+      font-size: clamp(18px, 1.62vw, 34px);
     }
 
     .lane {
@@ -220,14 +220,14 @@
     }
 
     .event.multi .event-title {
-      font-size: clamp(13px, 1.2vw, 23px);
+      font-size: clamp(16px, 1.44vw, 28px);
       line-height: 1;
     }
 
     .event.multi .event-trainer,
     .event.multi .event-room,
     .event.multi .event-time {
-      font-size: clamp(9px, .86vw, 16px);
+      font-size: clamp(11px, 1.03vw, 19px);
       line-height: 1;
     }
 
@@ -237,7 +237,7 @@
       justify-content: space-between;
       gap: 6px;
       overflow: hidden;
-      font-size: clamp(19px, 1.75vw, 38px);
+      font-size: clamp(23px, 2.1vw, 46px);
     }
 
     .event-header .event-title {
@@ -250,11 +250,11 @@
     }
 
     .event.multi .event-header {
-      font-size: clamp(13px, 1.2vw, 23px);
+      font-size: clamp(16px, 1.44vw, 28px);
     }
 
     .event-title {
-      font-size: clamp(19px, 1.75vw, 38px);
+      font-size: clamp(23px, 2.1vw, 46px);
       font-weight: 900;
       line-height: 1.02;
       color: #fff;
@@ -265,7 +265,7 @@
 
     .event-trainer,
     .event-room {
-      font-size: clamp(14px, 1.25vw, 27px);
+      font-size: clamp(17px, 1.5vw, 32px);
       line-height: 1.05;
       color: #fff;
       white-space: nowrap;
@@ -307,7 +307,7 @@
       place-items: center;
       text-align: center;
       color: var(--dim);
-      font-size: clamp(18px, 2vw, 34px);
+      font-size: clamp(22px, 2.4vw, 41px);
       padding: 30px;
     }
 
@@ -317,7 +317,7 @@
       justify-content: space-between;
       border-top: 2px solid var(--grid);
       padding: 0 18px;
-      font-size: clamp(12px, 1vw, 20px);
+      font-size: clamp(14px, 1.2vw, 24px);
       color: var(--muted);
       background: #050505;
     }
@@ -344,7 +344,7 @@
       }
 
       h1 {
-        font-size: clamp(28px, 4.6vw, 48px);
+        font-size: clamp(34px, 5.5vw, 58px);
         margin-top: 8px;
       }
 
@@ -355,7 +355,7 @@
       .corner,
       .col-head {
         height: var(--board-head-h);
-        font-size: clamp(12px, 1.7vw, 22px);
+        font-size: clamp(14px, 2.04vw, 26px);
         padding: 4px 5px;
       }
 
@@ -367,7 +367,7 @@
       .time-marker {
         justify-content: center;
         padding-top: 8px;
-        font-size: clamp(20px, 2.4vw, 34px);
+        font-size: clamp(24px, 2.88vw, 41px);
       }
 
       .event {
@@ -378,7 +378,7 @@
       }
 
       .event-title {
-        font-size: clamp(15px, 2.0vw, 30px);
+        font-size: clamp(18px, 2.4vw, 36px);
         white-space: normal;
         overflow: hidden;
         display: -webkit-box;
@@ -389,11 +389,11 @@
 
       .event-trainer,
       .event-room {
-        font-size: clamp(12px, 1.5vw, 22px);
+        font-size: clamp(14px, 1.8vw, 26px);
       }
 
       .event-header {
-        font-size: clamp(15px, 2.0vw, 30px);
+        font-size: clamp(18px, 2.4vw, 36px);
       }
 
       footer {
@@ -432,11 +432,10 @@
   <script>
     const CONFIG = {
       apiBase: 'https://api.fitpass.ru/api',
-      club: '487',
+      club: '0770',
       refreshMinutes: 5,
       timeZone: 'Asia/Yekaterinburg',
       excludedCategoryIDs: ['2081'],
-      useDemoIfApiFails: true,
       startHour: 9,
       endHour: 21,
       lanes: {
@@ -814,19 +813,6 @@
       return String(str).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\'': '&#39;', '"': '&quot;' }[ch]));
     }
 
-    const DEMO = [
-      { title: 'Стретчинг', trainer: 'Алёна Осина', room: 'Аэробика', begin: '08:00', end: '08:55', lane: 'group' },
-      { title: 'Аква-Интервал', trainer: 'Алина Драгун', room: 'Бассейн', begin: '08:30', end: '09:25', lane: 'pool' },
-      { title: 'Пилатес Реформер', trainer: 'Ольга Лана', room: 'студия пилатес', begin: '08:30', end: '09:25', lane: 'studio' },
-      { title: 'Восточный танец', trainer: 'Инна Лисан', room: 'Танцевальный зал', begin: '09:30', end: '10:25', lane: 'group' },
-      { title: 'Антигравити', trainer: 'Кунцев Роман', room: 'студия пилатес', begin: '09:30', end: '10:25', lane: 'studio' },
-      { title: 'Здоровая спина', trainer: 'Анна Лисан', room: 'Групповые программы', begin: '11:00', end: '11:55', lane: 'group' },
-      { title: 'Танцы', trainer: 'Настя Марина', room: 'Групповые программы', begin: '17:00', end: '17:55', lane: 'group' },
-      { title: 'TRX тренировка с петлями', trainer: 'Иван Драгун', room: 'большой клуб', begin: '18:00', end: '18:55', lane: 'group' },
-      { title: 'Аква-Нудл', trainer: 'Ирина Спина', room: 'Бассейн', begin: '19:00', end: '19:55', lane: 'pool' },
-      { title: 'МФР', trainer: 'Ольга Игорь', room: 'студия пилатес', begin: '19:30', end: '20:25', lane: 'studio' }
-    ];
-
     async function refresh() {
       setDateAndClock();
       updateLayoutMetrics();
@@ -838,12 +824,8 @@
         const clubNow = nowInClubTime();
         $('status').textContent = `Обновлено: ${pad(clubNow.hour)}:${pad(clubNow.minute)}`;
       } catch (err) {
-        if (CONFIG.useDemoIfApiFails) {
-          latestLessons = DEMO;
-          render(latestLessons);
-        }
         $('status').className = 'status error';
-        $('status').textContent = `API недоступен: показан демо-режим`;
+        $('status').textContent = `Ошибка загрузки расписания`;
         console.error(err);
       }
     }
@@ -852,11 +834,11 @@
       setDateAndClock();
       updateLayoutMetrics();
       buildTimeColumn();
-      render(latestLessons.length ? latestLessons : DEMO);
+      render(latestLessons);
     });
     setInterval(() => {
       setDateAndClock();
-      render(latestLessons.length ? latestLessons : DEMO);
+      render(latestLessons);
     }, 1000 * 15);
     setInterval(refresh, CONFIG.refreshMinutes * 60 * 1000);
     refresh();
