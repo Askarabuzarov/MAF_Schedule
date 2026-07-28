@@ -23,6 +23,8 @@
       --head-h: 168px;
       --board-head-h: 58px;
       --footer-h: 34px;
+      --safe-x: 26px;
+      --safe-y: 18px;
       --font: 'Mulish', Arial, Helvetica, sans-serif;
     }
 
@@ -50,6 +52,7 @@
     .screen {
       width: 100vw;
       height: 100vh;
+      padding: var(--safe-y) var(--safe-x);
       background:
         radial-gradient(circle at 50% 0%, rgba(255, 96, 20, 0.12), transparent 35%),
         linear-gradient(180deg, #080808 0%, #000 100%);
@@ -132,7 +135,7 @@
     .time-col,
     .lane {
       position: relative;
-      height: calc(100vh - var(--head-h) - var(--footer-h) - var(--board-head-h));
+      height: calc(100vh - var(--head-h) - var(--footer-h) - var(--board-head-h) - (2 * var(--safe-y)));
       min-height: 0;
     }
 
@@ -152,8 +155,8 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding-top: 8px;
-      font-size: clamp(18px, 1.62vw, 34px);
+      padding: 8px 6px 0;
+      font-size: clamp(16px, 1.4vw, 29px);
     }
 
     .lane {
@@ -332,6 +335,8 @@
         --time-col: 82px;
         --board-head-h: 54px;
         --footer-h: 30px;
+        --safe-x: 20px;
+        --safe-y: 16px;
       }
 
       .logo {
@@ -361,13 +366,13 @@
 
       .time-col,
       .lane {
-        height: calc(100vh - var(--head-h) - var(--footer-h) - var(--board-head-h));
+        height: calc(100vh - var(--head-h) - var(--footer-h) - var(--board-head-h) - (2 * var(--safe-y)));
       }
 
       .time-marker {
         justify-content: center;
-        padding-top: 8px;
-        font-size: clamp(24px, 2.88vw, 41px);
+        padding: 8px 4px 0;
+        font-size: clamp(20px, 2.4vw, 35px);
       }
 
       .event {
