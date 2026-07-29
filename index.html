@@ -122,6 +122,7 @@
       line-height: 1.05;
       letter-spacing: .02em;
       padding: 6px 8px;
+      overflow: hidden;
     }
 
     .corner {
@@ -236,7 +237,7 @@
 
     .event-header {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 6px;
       overflow: hidden;
@@ -250,6 +251,9 @@
 
     .event-header .event-time {
       font-size: 0.55em;
+      flex-shrink: 0;
+      line-height: 1.15;
+      white-space: nowrap;
     }
 
     .event.multi .event-header {
@@ -333,7 +337,7 @@
       :root {
         --head-h: 150px;
         --time-col: 82px;
-        --board-head-h: 54px;
+        --board-head-h: 60px;
         --footer-h: 30px;
         --safe-x: 20px;
         --safe-y: 16px;
@@ -360,7 +364,7 @@
       .corner,
       .col-head {
         height: var(--board-head-h);
-        font-size: clamp(14px, 2.04vw, 26px);
+        font-size: clamp(12px, 2.0vw, 20px);
         padding: 4px 5px;
       }
 
@@ -372,7 +376,7 @@
       .time-marker {
         justify-content: center;
         padding: 8px 4px 0;
-        font-size: clamp(20px, 2.4vw, 35px);
+        font-size: clamp(16px, 2.0vw, 24px);
       }
 
       .event {
@@ -386,10 +390,21 @@
         font-size: clamp(18px, 2.4vw, 36px);
         white-space: normal;
         overflow: hidden;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        line-height: 1.08;
         display: -webkit-box;
         line-clamp: 2;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+      }
+
+      .event-header {
+        align-items: flex-start;
+      }
+
+      .event-header .event-time {
+        margin-top: 0.15em;
       }
 
       .event-trainer,
@@ -420,7 +435,7 @@
       <div class="corner">Время</div>
       <div class="col-head">Групповые<br>программы</div>
       <div class="col-head">Бассейн</div>
-      <div class="col-head">Студия Йоги и Пилатес</div>
+      <div class="col-head">Студия Йоги<br>и Пилатес</div>
 
       <div class="time-col" id="timeCol"></div>
       <div class="lane" id="lane-group"></div>
