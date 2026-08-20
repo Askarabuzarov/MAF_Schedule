@@ -87,13 +87,30 @@
       text-align: center;
     }
 
-    .date-line {
+    .corner-info {
       position: absolute;
       right: 18px;
-      bottom: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .date-line {
       font-size: clamp(17px, 1.56vw, 29px);
       color: var(--muted);
       letter-spacing: .04em;
+      line-height: 1;
+    }
+
+    .time-corner {
+      font-size: clamp(22px, 2.4vw, 42px);
+      font-weight: 900;
+      color: var(--orange);
+      letter-spacing: .04em;
+      line-height: 1;
     }
 
     .board {
@@ -321,7 +338,7 @@
     footer {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
       border-top: 2px solid var(--grid);
       padding: 0 18px;
       font-size: clamp(14px, 1.2vw, 24px);
@@ -357,8 +374,16 @@
         margin-top: 8px;
       }
 
+      .corner-info {
+        right: 14px;
+      }
+
       .date-line {
-        display: none;
+        font-size: clamp(12px, 2.6vw, 18px);
+      }
+
+      .time-corner {
+        font-size: clamp(20px, 4.5vw, 30px);
       }
 
       .corner,
@@ -428,14 +453,17 @@
     <header>
       <img class="logo" src="MAF_Logo_White.svg" alt="Mayakofsky Fitness" />
       <h1>Расписание на сегодня</h1>
-      <div class="date-line" id="dateLine"></div>
+      <div class="corner-info">
+        <div class="time-corner" id="clock"></div>
+        <div class="date-line" id="dateLine"></div>
+      </div>
     </header>
 
     <section class="board" aria-label="Расписание занятий">
       <div class="corner">Время</div>
       <div class="col-head">Групповые<br>программы</div>
       <div class="col-head">Бассейн</div>
-      <div class="col-head">Студия Йоги<br>и Пилатес</div>
+      <div class="col-head">Студии</div>
 
       <div class="time-col" id="timeCol"></div>
       <div class="lane" id="lane-group"></div>
@@ -444,7 +472,6 @@
     </section>
 
     <footer>
-      <span id="clock"></span>
       <span class="status" id="status">Загрузка расписания…</span>
     </footer>
   </main>
