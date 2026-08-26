@@ -489,6 +489,10 @@
         group: ['групп', 'зал', 'аэроб', 'кардио', 'танц', 'тренаж'],
         pool: ['бассейн', 'pool', 'аква', 'плав'],
         studio: ['студ', 'пилат', 'йога', 'антиграв', 'реформер']
+      },
+      // words that must NOT trigger a lane match even though they contain one of its keywords (e.g. "Акварелька" is a kids' club, not the pool)
+      laneExceptions: {
+        pool: ['акварельк']
       }
     };
 
@@ -725,6 +729,8 @@
     function classifyLane(title, roomName, categoryName) {
       const text = `${title} ${roomName} ${categoryName || ''}`.toLowerCase();
       for (const [lane, keys] of Object.entries(CONFIG.lanes)) {
+        const exceptions = (CONFIG.laneExceptions && CONFIG.laneExceptions[lane]) || [];
+        if (exceptions.some(k => text.includes(k))) continue;
         if (keys.some(k => text.includes(k))) return lane;
       }
       return 'group';
