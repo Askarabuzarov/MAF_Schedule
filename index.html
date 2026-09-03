@@ -596,6 +596,25 @@
       return normalizeLessons(timetable, roomsById, mastersById, lessonTypesById);
     }
 
+    const CACHE_KEY = 'mafScheduleCache';
+
+    function saveCache(lessons) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ date: todayISO(), lessons, savedAt: Date.now() }));
+      } catch (err) {
+        console.warn('Cache save failed', err);
+      }
+    }
+
+    function loadCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
     function buildLookup(arr) {
       const lookup = {};
       (Array.isArray(arr) ? arr : []).forEach(x => {
@@ -878,13 +897,26 @@
       try {
         latestLessons = await loadData();
         render(latestLessons);
+        saveCache(latestLessons);
         $('status').className = 'status';
         const clubNow = nowInClubTime();
         $('status').textContent = `Обновлено: ${pad(clubNow.hour)}:${pad(clubNow.minute)}`;
       } catch (err) {
-        $('status').className = 'status error';
-        $('status').textContent = `Ошибка загрузки расписания`;
         console.error(err);
+        const cache = loadCache();
+        if (cache && Array.isArray(cache.lessons) && cache.lessons.length) {
+          latestLessons = cache.lessons;
+          render(latestLessons);
+          const cachedTime = new Date(cache.savedAt);
+          const label = cache.date === todayISO()
+            ? `кэш ${pad(cachedTime.getHours())}:${pad(cachedTime.getMinutes())}`
+            : `кэш за ${cache.date}`;
+          $('status').className = 'status error';
+          $('status').textContent = `Ошибка загрузки, показано сохранённое расписание (${label})`;
+        } else {
+          $('status').className = 'status error';
+          $('status').textContent = `Ошибка загрузки расписания`;
+        }
       }
     }
 
