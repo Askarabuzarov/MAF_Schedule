@@ -655,7 +655,7 @@
           date: item.Date,
           begin: item.BeginTime,
           end: item.EndTime || addMinutes(item.BeginTime, item.DurationMinutes || 60),
-          lane: classifyLane(title, roomName, extractCategoryNames(type, item).join(' '))
+          lane: isRequirePayment(type, item) ? 'studio' : classifyLane(title, roomName, extractCategoryNames(type, item).join(' '))
         });
       });
 
@@ -717,6 +717,11 @@
     function isExcludedCategoryFromLessonType(type, item) {
       const excluded = new Set(CONFIG.excludedCategoryIDs.map(String));
       return extractCategoryIDs(type, item).some(id => excluded.has(id));
+    }
+
+    function isRequirePayment(type = {}, item = {}) {
+      const value = [item.RequirePayment, type.RequirePayment].find(v => v !== undefined && v !== null);
+      return value === true || value === 'true' || value === 1 || value === '1';
     }
 
     function addMinutes(hhmm, minutes) {
