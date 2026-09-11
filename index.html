@@ -499,6 +499,11 @@
     const $ = (id) => document.getElementById(id);
     const pad = (n) => String(n).padStart(2, '0');
     let latestLessons = [];
+    // Offset between the FITPASS server clock and this device's clock, so a device with
+    // a wrong/drifted system time still displays the correct time (see getJSON()).
+    let serverTimeOffsetMs = 0;
+
+    const correctedNow = () => new Date(Date.now() + serverTimeOffsetMs);
 
     const todayISO = () => {
       const parts = new Intl.DateTimeFormat('en-CA', {
@@ -506,7 +511,7 @@
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
-      }).formatToParts(new Date());
+      }).formatToParts(correctedNow());
       const get = (type) => parts.find(p => p.type === type).value;
       return `${get('year')}-${get('month')}-${get('day')}`;
     };
@@ -521,7 +526,7 @@
         minute: '2-digit',
         second: '2-digit',
         hourCycle: 'h23'
-      }).formatToParts(new Date());
+      }).formatToParts(correctedNow());
       const get = (type) => parts.find(p => p.type === type).value;
       return {
         year: Number(get('year')),
@@ -534,7 +539,7 @@
     }
 
     function setDateAndClock() {
-      const now = new Date();
+      const now = correctedNow();
       $('dateLine').textContent = now.toLocaleDateString('ru-RU', { timeZone: CONFIG.timeZone, weekday: 'long', day: 'numeric', month: 'long' });
       const clubNow = nowInClubTime();
       $('clock').textContent = `${pad(clubNow.hour)}:${pad(clubNow.minute)}`;
@@ -573,6 +578,10 @@
       const res = await fetch(url.toString(), { cache: 'no-store' });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       const payload = await res.json();
+      if (payload && payload.ActualDateTime) {
+        const serverTime = new Date(payload.ActualDateTime).getTime();
+        if (!Number.isNaN(serverTime)) serverTimeOffsetMs = serverTime - Date.now();
+      }
       if (payload && payload.Error) {
         throw new Error(payload.Error.ClientMessage || payload.Error.ErrorCode || 'FITPASS API error');
       }
@@ -600,7 +609,7 @@
 
     function saveCache(lessons) {
       try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ date: todayISO(), lessons, savedAt: Date.now() }));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ date: todayISO(), lessons, savedAt: correctedNow().getTime() }));
       } catch (err) {
         console.warn('Cache save failed', err);
       }
@@ -650,20 +659,21 @@
         const master = mastersById[String(item.MasterID)] || mastersById[String(item.MasterId)] || {};
         const type = resolveLessonType(item, typesById);
 
+        const title = item.LessonTypeName || item.Name || type.Name || 'Занятие';
+
         // Children's classes are excluded using method 5.5 lesson type data.
         // In method 5.5, CategoryID belongs to the lesson type; the timetable entry is only joined to it by LessonTypeID.
-        if (isExcludedCategoryFromLessonType(type, item)) {
+        if (isExcludedCategoryFromLessonType(type, item) || isExcludedTitle(title)) {
           excludedForDebug.push({
             timetableID: item.ID,
             lessonTypeID: item.LessonTypeID || item.LessonTypeId || item.TypeID,
-            title: item.LessonTypeName || item.Name || type.Name,
+            title,
             categoryID: extractCategoryIDs(type, item).join(', '),
             categoryName: extractCategoryNames(type, item).join(', ')
           });
           return;
         }
 
-        const title = item.LessonTypeName || item.Name || type.Name || 'Занятие';
         const trainer = item.MasterName || master.Name || [master.LastName, master.FirstName, master.Patronymic].filter(Boolean).join(' ') || '';
         const roomName = item.RoomName || room.Name || '';
         visible.push({
@@ -736,6 +746,10 @@
     function isExcludedCategoryFromLessonType(type, item) {
       const excluded = new Set(CONFIG.excludedCategoryIDs.map(String));
       return extractCategoryIDs(type, item).some(id => excluded.has(id));
+    }
+
+    function isExcludedTitle(title) {
+      return CONFIG.excludedTitles.includes(title);
     }
 
     function isRequirePayment(type = {}, item = {}) {
