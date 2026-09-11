@@ -927,10 +927,10 @@
             ? `кэш ${pad(cachedTime.getHours())}:${pad(cachedTime.getMinutes())}`
             : `кэш за ${cache.date}`;
           $('status').className = 'status error';
-          $('status').textContent = `Ошибка загрузки (${err.message}), показано сохранённое расписание (${label})`;
+          $('status').textContent = `Ошибка загрузки, показано сохранённое расписание (${label})`;
         } else {
           $('status').className = 'status error';
-          $('status').textContent = `Ошибка загрузки расписания: ${err.message}`;
+          $('status').textContent = `Ошибка загрузки расписания`;
         }
       }
     }
